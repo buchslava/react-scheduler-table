@@ -2,241 +2,201 @@ import React, { Component } from "react";
 
 import { ID, timeToStringParser, timeToIntParser } from "./utils.js";
 import Timetable from "react-scheduler-table";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const settings = {
-	cellHeight: 40,
-	startDay: "09:00",
+  cellHeight: 40,
+  startDay: "09:00",
   endDay: "16:00",
   year: 2020,
   month: 1,
   day: 9,
-	is12hours: false,
-	hourSplit: 0.25, // 1 hour / 0.25 = 15 min - each row
-	columnCnt: 4
+  is12hours: false,
+  hourSplit: 0.25, // 1 hour / 0.25 = 15 min - each row
+  columnCnt: 4
 };
 
 const reserved = [
-	{
-		id: ID(),
-		start: 10,
-		end: 12,
+  {
+    id: ID(),
+    start: 10,
+    end: 12,
     column: 1,
     year: 2020,
-    month: 2,
-    day: 9,
-	},
-	{
-		id: ID(),
-		start: 9,
-		end: 10.5,
+    month: 1,
+    day: 10,
+  },
+  {
+    id: ID(),
+    start: 9,
+    end: 10.5,
     column: 2,
     year: 2020,
     month: 1,
     day: 9,
-	}
+  }
 ];
 
 class App extends Component {
-	state = {
-		settings
-	}
+  state = {
+    settings,
+    dateToday: new Date()
+  }
 
-	setHourFormat(e) {
-		let newSettings = {
-			...this.state.settings,
-			cellHeight: parseInt(e.target.value, 10) === 12 ? 52 : 40,
-			is12hours: parseInt(e.target.value, 10) === 12
-		}
-
-		this.setState({ settings: newSettings })
-	}
-
-	setHours(e) {
-		let newSettings = {
-			...this.state.settings,
-			[e.target.name]: e.target.value
+  setHourFormat(e) {
+    let newSettings = {
+      ...this.state.settings,
+      cellHeight: parseInt(e.target.value, 10) === 12 ? 52 : 40,
+      is12hours: parseInt(e.target.value, 10) === 12
     }
 
-		this.setState({ settings: newSettings })
-	}
+    this.setState({ settings: newSettings })
+  }
 
-	render() {
-		const { is12hours, startDay, endDay, year, month, day } = this.state.settings;
-		const timeToStr = timeToStringParser(is12hours);
-		const timeToInt = timeToIntParser(is12hours);
+  setHours(e) {
+    let newSettings = {
+      ...this.state.settings,
+      [e.target.name]: e.target.value
+    }
 
-		return (
-			<div className="App">
-				<div className="container">
-					<div className="Settings">
-						<h2>Settings</h2>
-						<div className="form-group">
-							<div className="custom-control custom-radio custom-control-inline">
-							  <input
-							  	type="radio"
-							  	checked={is12hours}
-							  	id="customRadioInline1"
-							  	name="customRadioInline1"
-							  	className="custom-control-input"
-							  	onChange={this.setHourFormat.bind(this)}
-							  	value={12} />
-							  <label className="custom-control-label" htmlFor="customRadioInline1">12 hour format</label>
-							</div>
-							<div className="custom-control custom-radio custom-control-inline">
-							  <input
-							  	type="radio"
-							  	checked={!is12hours}
-							  	id="customRadioInline2"
-							  	name="customRadioInline1"
-							  	className="custom-control-input"
-							  	onChange={this.setHourFormat.bind(this)}
-							  	value={24} />
-							  <label className="custom-control-label" htmlFor="customRadioInline2">24 hour format</label>
-							</div>
-						</div>
-						<div className="form-row">
-					    <div className="col">
-					    	<div className="form-group">
-					    	  <label htmlFor="start_day">Start of the day</label>
-						      <select
-						      	id="start_day"
-						      	name="startDay"
-						      	value={startDay}
-						      	className="custom-select"
-						      	onChange={this.setHours.bind(this)}
-						      >
-									  {(() => {
-									  	let arr = [];
-									  	for (let i = 1; i < timeToInt(endDay); i++) {
-									  		arr.push(<option value={timeToStr(i)} key={i}>{timeToStr(i)}</option>)
-									  	}
-									  	return arr;
-									  })()}
-									</select>
-					    	</div>
-					    </div>
-					    <div className="col">
-					    	<div className="form-group">
-					    	  <label htmlFor="end_day">End of the day</label>
-						      <select
-						      	id="end_day"
-						      	name="endDay"
-						      	value={endDay}
-						      	className="custom-select"
-						      	onChange={this.setHours.bind(this)}
-						      >
-									  {(() => {
-									  	let arr = [];
-									  	for (let i = timeToInt(startDay) + 1; i <= 24; i++) {
-									  		arr.push(<option value={timeToStr(i)} key={i}>{timeToStr(i)}</option>)
-									  	}
-									  	return arr;
-									  })()}
-									</select>
-					    	</div>
-					    </div>
-					  </div>
+    this.setState({ settings: newSettings })
+  }
 
+  dateChanged(date) {
+    let newSettings = {
+      ...this.state.settings
+    };
+    newSettings.year = date.getYear()+1900;
+    newSettings.month = date.getMonth() + 1;
+    newSettings.day = date.getDate();
+    this.setState({
+      dateToday: date,
+      settings: newSettings
+    });
+   }
 
+  render() {
+    const { is12hours, startDay, endDay, year, month, day } = this.state.settings;
+    const timeToStr = timeToStringParser(is12hours);
+    const timeToInt = timeToIntParser(is12hours);
+
+    return (
+      <div className="App">
+        <div className="container">
+          <div className="Settings">
+            <h2>Settings</h2>
+            <div className="form-group">
+              <div className="custom-control custom-radio custom-control-inline">
+                <input
+                  type="radio"
+                  checked={is12hours}
+                  id="customRadioInline1"
+                  name="customRadioInline1"
+                  className="custom-control-input"
+                  onChange={this.setHourFormat.bind(this)}
+                  value={12} />
+                <label className="custom-control-label" htmlFor="customRadioInline1">12 hour format</label>
+              </div>
+              <div className="custom-control custom-radio custom-control-inline">
+                <input
+                  type="radio"
+                  checked={!is12hours}
+                  id="customRadioInline2"
+                  name="customRadioInline1"
+                  className="custom-control-input"
+                  onChange={this.setHourFormat.bind(this)}
+                  value={24} />
+                <label className="custom-control-label" htmlFor="customRadioInline2">24 hour format</label>
+              </div>
+            </div>
             <div className="form-row">
               <div className="col">
-					    	<div className="form-group">
-					    	  <label htmlFor="year">Year</label>
-						      <select
-						      	id="year"
-						      	name="year"
-						      	value={year}
-						      	className="custom-select"
-						      	onChange={this.setHours.bind(this)}
-						      >
-									  {(() => {
-									  	let arr = [];
-									  	for (let i = 2020; i <= 2022; i++) {
-									  		arr.push(<option value={`${i}`} key={i}>{`${i}`}</option>)
-									  	}
-									  	return arr;
-									  })()}
-									</select>
-					    	</div>
-					    </div>
+                <div className="form-group">
+                  <label htmlFor="start_day">Start of the day</label>
+                  <select
+                    id="start_day"
+                    name="startDay"
+                    value={startDay}
+                    className="custom-select"
+                    onChange={this.setHours.bind(this)}
+                  >
+                    {(() => {
+                      let arr = [];
+                      for (let i = 1; i < timeToInt(endDay); i++) {
+                        arr.push(<option value={timeToStr(i)} key={i}>{timeToStr(i)}</option>)
+                      }
+                      return arr;
+                    })()}
+                  </select>
+                </div>
+              </div>
               <div className="col">
-					    	<div className="form-group">
-					    	  <label htmlFor="month">Month</label>
-						      <select
-						      	id="month"
-						      	name="month"
-						      	value={month}
-						      	className="custom-select"
-						      	onChange={this.setHours.bind(this)}
-						      >
-									  {(() => {
-									  	let arr = [];
-									  	for (let i = 1; i <= 12; i++) {
-									  		arr.push(<option value={`${i}`} key={i}>{`${i}`}</option>)
-									  	}
-									  	return arr;
-									  })()}
-									</select>
-					    	</div>
-					    </div>
+                <div className="form-group">
+                  <label htmlFor="end_day">End of the day</label>
+                  <select
+                    id="end_day"
+                    name="endDay"
+                    value={endDay}
+                    className="custom-select"
+                    onChange={this.setHours.bind(this)}
+                  >
+                    {(() => {
+                      let arr = [];
+                      for (let i = timeToInt(startDay) + 1; i <= 24; i++) {
+                        arr.push(<option value={timeToStr(i)} key={i}>{timeToStr(i)}</option>)
+                      }
+                      return arr;
+                    })()}
+                  </select>
+                </div>
+              </div>
               <div className="col">
-					    	<div className="form-group">
-					    	  <label htmlFor="day">Day</label>
-						      <select
-						      	id="day"
-						      	name="day"
-						      	value={day}
-						      	className="custom-select"
-						      	onChange={this.setHours.bind(this)}
-						      >
-									  {(() => {
-									  	let arr = [];
-									  	for (let i = 1; i <= 31; i++) {
-									  		arr.push(<option value={`${i}`} key={i}>{`${i}`}</option>)
-									  	}
-									  	return arr;
-									  })()}
-									</select>
-					    	</div>
-					    </div>
+                <label htmlFor="end_day">Current date</label>
+                <div className="form-group">
+                  <DatePicker
+                    selected={this.state.dateToday}
+                    onChange={this.dateChanged.bind(this)}
+                  />
+                </div>
+              </div>
             </div>
-					  <div className="form-row">
-					  	<div className="col">
-					  		<label htmlFor="columns">Columns</label>
-					  		<input
-					  			type="range"
-					  			className="custom-range"
-					  			id="columns"
-					  			min={1}
-					  			max={10}
-					  			value={this.state.settings.columnCnt}
-					  			onChange={e => this.setState({settings: {...this.state.settings, columnCnt: parseInt(e.target.value, 10)}})} />
-					  	</div>
-					  </div>
-					</div>
-					<Timetable
-						className="MyTable"
-						classNameSavedTime="MySavedTime"
-						settings={this.state.settings}
-						reserved={reserved}
-						savedTimeContent={
-							savedTime =>
-							<h5>
-								My Saved Time: <br /> {`${savedTime.parsedStart} - ${savedTime.parsedEnd}`}
-							</h5>
-						}
-						onAddTime={time => console.log("onAddTime: ", time)}
-						onSaveTime={reserved =>
-							console.log("onSaveTime: ", reserved)
-						}
-					/>
-				</div>
-				<footer className="Footer">
-					MIT © <a href="https://github.com/SergeyDragunov">SergeyDragunov</a>
-				</footer>
-			</div>
-		);
-	}
+            <div className="form-row">
+              <div className="col">
+                <label htmlFor="columns">Columns</label>
+                <input
+                  type="range"
+                  className="custom-range"
+                  id="columns"
+                  min={1}
+                  max={10}
+                  value={this.state.settings.columnCnt}
+                  onChange={e => this.setState({ settings: { ...this.state.settings, columnCnt: parseInt(e.target.value, 10) } })} />
+              </div>
+            </div>
+          </div>
+          <Timetable
+            className="MyTable"
+            classNameSavedTime="MySavedTime"
+            settings={this.state.settings}
+            reserved={reserved}
+            savedTimeContent={
+              savedTime =>
+                <h5>
+                  My Saved Time: <br /> {`${savedTime.parsedStart} - ${savedTime.parsedEnd}`}
+                </h5>
+            }
+            onAddTime={time => console.log("onAddTime: ", time)}
+            onSaveTime={reserved =>
+              console.log("onSaveTime: ", reserved)
+            }
+          />
+        </div>
+        <footer className="Footer">
+        </footer>
+      </div>
+    );
+  }
 }
 
 export default App;
