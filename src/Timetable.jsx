@@ -167,7 +167,11 @@ export class Timetable extends Component {
 			let status = "";
 			const reserved = this.state.reserved;
 			for (let i = 0; i < reserved.length; i++) {
-				const { start, end, column } = reserved[i];
+        const { start, end, column, year, month, day } = reserved[i];
+        const { year: sYear, month: sMonth, day: sDay } = this.settings;
+        if (year != sYear || month != sMonth || day != sDay) {
+          continue;
+        }
 				if (cellColumn === column) {
 					if (time === start) status = "reserved-start";
 					else if (time === end - hourSplit) status = "reserved-end";

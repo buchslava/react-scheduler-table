@@ -6,7 +6,10 @@ import Timetable from "react-scheduler-table";
 const settings = {
 	cellHeight: 40,
 	startDay: "09:00",
-	endDay: "16:00",
+  endDay: "16:00",
+  year: 2020,
+  month: 1,
+  day: 9,
 	is12hours: false,
 	hourSplit: 0.25, // 1 hour / 0.25 = 15 min - each row
 	columnCnt: 4
@@ -17,13 +20,19 @@ const reserved = [
 		id: ID(),
 		start: 10,
 		end: 12,
-		column: 1
+    column: 1,
+    year: 2020,
+    month: 2,
+    day: 9,
 	},
 	{
 		id: ID(),
 		start: 9,
 		end: 10.5,
-		column: 2
+    column: 2,
+    year: 2020,
+    month: 1,
+    day: 9,
 	}
 ];
 
@@ -46,13 +55,13 @@ class App extends Component {
 		let newSettings = {
 			...this.state.settings,
 			[e.target.name]: e.target.value
-		}
+    }
 
 		this.setState({ settings: newSettings })
 	}
 
 	render() {
-		const { is12hours, startDay, endDay } = this.state.settings;
+		const { is12hours, startDay, endDay, year, month, day } = this.state.settings;
 		const timeToStr = timeToStringParser(is12hours);
 		const timeToInt = timeToIntParser(is12hours);
 
@@ -63,27 +72,27 @@ class App extends Component {
 						<h2>Settings</h2>
 						<div className="form-group">
 							<div className="custom-control custom-radio custom-control-inline">
-							  <input 
-							  	type="radio" 
+							  <input
+							  	type="radio"
 							  	checked={is12hours}
-							  	id="customRadioInline1" 
-							  	name="customRadioInline1" 
+							  	id="customRadioInline1"
+							  	name="customRadioInline1"
 							  	className="custom-control-input"
-							  	onChange={this.setHourFormat.bind(this)}  
+							  	onChange={this.setHourFormat.bind(this)}
 							  	value={12} />
 							  <label className="custom-control-label" htmlFor="customRadioInline1">12 hour format</label>
 							</div>
 							<div className="custom-control custom-radio custom-control-inline">
-							  <input 
-							  	type="radio" 
+							  <input
+							  	type="radio"
 							  	checked={!is12hours}
-							  	id="customRadioInline2" 
-							  	name="customRadioInline1" 
+							  	id="customRadioInline2"
+							  	name="customRadioInline1"
 							  	className="custom-control-input"
-							  	onChange={this.setHourFormat.bind(this)} 
+							  	onChange={this.setHourFormat.bind(this)}
 							  	value={24} />
 							  <label className="custom-control-label" htmlFor="customRadioInline2">24 hour format</label>
-							</div>	
+							</div>
 						</div>
 						<div className="form-row">
 					    <div className="col">
@@ -91,8 +100,8 @@ class App extends Component {
 					    	  <label htmlFor="start_day">Start of the day</label>
 						      <select
 						      	id="start_day"
-						      	name="startDay" 
-						      	value={startDay} 
+						      	name="startDay"
+						      	value={startDay}
 						      	className="custom-select"
 						      	onChange={this.setHours.bind(this)}
 						      >
@@ -109,10 +118,10 @@ class App extends Component {
 					    <div className="col">
 					    	<div className="form-group">
 					    	  <label htmlFor="end_day">End of the day</label>
-						      <select 
+						      <select
 						      	id="end_day"
-						      	name="endDay" 
-						      	value={endDay} 
+						      	name="endDay"
+						      	value={endDay}
 						      	className="custom-select"
 						      	onChange={this.setHours.bind(this)}
 						      >
@@ -127,15 +136,79 @@ class App extends Component {
 					    	</div>
 					    </div>
 					  </div>
+
+
+            <div className="form-row">
+              <div className="col">
+					    	<div className="form-group">
+					    	  <label htmlFor="year">Year</label>
+						      <select
+						      	id="year"
+						      	name="year"
+						      	value={year}
+						      	className="custom-select"
+						      	onChange={this.setHours.bind(this)}
+						      >
+									  {(() => {
+									  	let arr = [];
+									  	for (let i = 2020; i <= 2022; i++) {
+									  		arr.push(<option value={`${i}`} key={i}>{`${i}`}</option>)
+									  	}
+									  	return arr;
+									  })()}
+									</select>
+					    	</div>
+					    </div>
+              <div className="col">
+					    	<div className="form-group">
+					    	  <label htmlFor="month">Month</label>
+						      <select
+						      	id="month"
+						      	name="month"
+						      	value={month}
+						      	className="custom-select"
+						      	onChange={this.setHours.bind(this)}
+						      >
+									  {(() => {
+									  	let arr = [];
+									  	for (let i = 1; i <= 12; i++) {
+									  		arr.push(<option value={`${i}`} key={i}>{`${i}`}</option>)
+									  	}
+									  	return arr;
+									  })()}
+									</select>
+					    	</div>
+					    </div>
+              <div className="col">
+					    	<div className="form-group">
+					    	  <label htmlFor="day">Day</label>
+						      <select
+						      	id="day"
+						      	name="day"
+						      	value={day}
+						      	className="custom-select"
+						      	onChange={this.setHours.bind(this)}
+						      >
+									  {(() => {
+									  	let arr = [];
+									  	for (let i = 1; i <= 31; i++) {
+									  		arr.push(<option value={`${i}`} key={i}>{`${i}`}</option>)
+									  	}
+									  	return arr;
+									  })()}
+									</select>
+					    	</div>
+					    </div>
+            </div>
 					  <div className="form-row">
 					  	<div className="col">
 					  		<label htmlFor="columns">Columns</label>
-					  		<input 
-					  			type="range" 
-					  			className="custom-range" 
-					  			id="columns" 
-					  			min={1} 
-					  			max={10} 
+					  		<input
+					  			type="range"
+					  			className="custom-range"
+					  			id="columns"
+					  			min={1}
+					  			max={10}
 					  			value={this.state.settings.columnCnt}
 					  			onChange={e => this.setState({settings: {...this.state.settings, columnCnt: parseInt(e.target.value, 10)}})} />
 					  	</div>
@@ -147,7 +220,7 @@ class App extends Component {
 						settings={this.state.settings}
 						reserved={reserved}
 						savedTimeContent={
-							savedTime => 
+							savedTime =>
 							<h5>
 								My Saved Time: <br /> {`${savedTime.parsedStart} - ${savedTime.parsedEnd}`}
 							</h5>
